@@ -1,0 +1,7 @@
+{
+  "name": "EDUCATION APP v3.1 STABLE",
+  "description": "Nền tảng Học tập, Thi thử, Phản xạ nhanh, Đối kháng 2 đội và Quản trị nội dung & Ngân hàng câu hỏi thông minh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

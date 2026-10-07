@@ -1,0 +1,21 @@
+{
+  "short_name": "NguyenVanTroi",
+  "name": "App Học Tập Nguyễn Văn Trỗi",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "description": "Nền tảng ôn thi trắc nghiệm offline dành cho học sinh trường THPT Nguyễn Văn Trỗi"
+}
