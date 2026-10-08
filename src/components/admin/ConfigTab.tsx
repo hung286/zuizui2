@@ -24,9 +24,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ currentConfig, onConfigUpd
   const [saveStatus, setSaveStatus] = useState<{ success: boolean; message: string } | null>(null);
   const [isProcessingLogo, setIsProcessingLogo] = useState(false);
 
-  // Quick Preset Titles (Step 37)
   const presets = [
-    { name: 'ANH HÙNG NGUYỄN VĂN TRỖI', org: 'Trường THPT Nguyễn Văn Trỗi', theme: 'blue' as ThemeColor },
+    { name: 'TOÁN HỌC', org: 'LỚP TOÁN THẦY HÙNG', theme: 'blue' as ThemeColor },
     { name: 'RUNG CHUÔNG VÀNG – LỊCH SỬ VIỆT NAM', org: 'CLB Sử Học Tuổi Trẻ', theme: 'amber' as ThemeColor },
     { name: 'THỬ THÁCH TIẾNG ANH LỚP 9', org: 'Tổ Ngoại Ngữ Trường THCS', theme: 'indigo' as ThemeColor },
     { name: 'ÔN TẬP KHOA HỌC – CUỐI HỌC KỲ', org: 'Tổ Tự Nhiên & STEM', theme: 'emerald' as ThemeColor },

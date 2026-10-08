@@ -7,6 +7,7 @@ import { AIGeneratorTab } from './AIGeneratorTab';
 import { HistoryTab } from './HistoryTab';
 import { BackupTab } from './BackupTab';
 import { DashboardTab } from './DashboardTab';
+import { ToolsTab } from './ToolsTab';
 import { soundFx } from '../../utils/sound';
 import {
   Settings,
@@ -36,7 +37,7 @@ interface AdminStudioProps {
   onExitAdmin: () => void;
 }
 
-type AdminTab = 'dashboard' | 'config' | 'questions' | 'materials' | 'ai' | 'history' | 'backup';
+type AdminTab = 'dashboard' | 'config' | 'questions' | 'materials' | 'ai' | 'history' | 'backup' | 'tools';
 
 export const AdminStudio: React.FC<AdminStudioProps> = ({
   config,
@@ -254,6 +255,18 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({
         </button>
 
         <button
+          onClick={() => setActiveTab('tools')}
+          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 shrink-0 ${
+            activeTab === 'tools'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>Công cụ & Geogebra</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('history')}
           className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === 'history'
@@ -312,6 +325,10 @@ export const AdminStudio: React.FC<AdminStudioProps> = ({
 
         {activeTab === 'history' && (
           <HistoryTab history={history} onHistoryChange={onHistoryUpdated} />
+        )}
+
+        {activeTab === 'tools' && (
+          <ToolsTab />
         )}
 
         {activeTab === 'backup' && (
