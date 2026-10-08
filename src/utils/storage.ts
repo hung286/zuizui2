@@ -346,14 +346,34 @@ export function factoryResetSystem(): void {
 }
 const KEY_TOOLS = 'edu_teaching_tools_v31';
 
+export const DEFAULT_TOOLS: TeachingTool[] = [
+  {
+    id: 'tool_default_geogebra_1',
+    name: 'Miền nghiệm hệ bất phương trình 2 ẩn',
+    type: 'geogebra',
+    category: 'thao-tac',
+    url: 'https://www.geogebra.org/classic/xuzqeffb',
+    description: 'Công cụ tính toán và vẽ miền nghiệm hệ bất phương trình',
+    isActive: true,
+    createdAt: new Date().toISOString()
+  }
+];
+
 export function getTeachingTools(): TeachingTool[] {
   try {
     const raw = localStorage.getItem(KEY_TOOLS);
-    if (!raw) return [];
+    if (!raw) {
+      localStorage.setItem(KEY_TOOLS, JSON.stringify(DEFAULT_TOOLS));
+      return DEFAULT_TOOLS;
+    }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(KEY_TOOLS, JSON.stringify(DEFAULT_TOOLS));
+      return DEFAULT_TOOLS;
+    }
+    return parsed;
   } catch {
-    return [];
+    return DEFAULT_TOOLS;
   }
 }
 
