@@ -9,7 +9,7 @@ export async function callGeminiApiWithFallback(
   systemInstruction?: string,
   preferredModel?: string
 ): Promise<string> {
-  const apiKey = localStorage.getItem('edu_gemini_api_key');
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('edu_gemini_api_key');
   if (!apiKey) {
     throw new Error('API Key chưa được cài đặt. Vui lòng thiết lập API Key.');
   }

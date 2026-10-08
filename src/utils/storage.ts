@@ -1,16 +1,16 @@
 import { AppConfig, Question, PlayHistory, StudentProfile, TeachingTool } from '../types';
 import { DEFAULT_QUESTIONS_50 } from '../data/defaultQuestions';
 
-const KEY_CONFIG = 'edu_app_config_v31';
-const KEY_QUESTIONS = 'edu_question_bank_v31';
-const KEY_HISTORY = 'edu_play_history_v31';
-const KEY_STUDENT = 'edu_student_profile_v31';
+const KEY_CONFIG = 'edu_app_config_v32';
+const KEY_QUESTIONS = 'edu_question_bank_v32';
+const KEY_HISTORY = 'edu_play_history_v32';
+const KEY_STUDENT = 'edu_student_profile_v32';
 const KEY_GEMINI_KEY = 'edu_gemini_session_key';
 
 export const DEFAULT_CONFIG: AppConfig = {
-  appName: 'ANH HÙNG NGUYỄN VĂN TRỖI',
-  shortDesc: 'Khí phách lẫm liệt của người chiến sĩ Biệt động Sài Gòn bất tử',
-  orgName: 'Trường THPT Nguyễn Văn Trỗi',
+  appName: 'TOÁN PRO',
+  shortDesc: 'Nền tảng học toán tương tác và luyện thi thông minh',
+  orgName: 'LỚP TOÁN THẦY HÙNG',
   topBadge: 'EDUCATION APP v3.1 STABLE',
   themeColor: 'blue',
   logoUrl: '',
