@@ -17,9 +17,7 @@ export const ApiKeyModal: React.FC = () => {
     // Check if key exists on mount
     const savedKey = localStorage.getItem('edu_gemini_api_key');
     const savedModel = localStorage.getItem('edu_gemini_model');
-    if (!savedKey) {
-      setIsOpen(true);
-    } else {
+    if (savedKey) {
       setApiKey(savedKey);
       if (savedModel) setSelectedModel(savedModel);
     }
@@ -39,12 +37,7 @@ export const ApiKeyModal: React.FC = () => {
 
   const handleClose = () => {
     soundFx.playClick();
-    const savedKey = localStorage.getItem('edu_gemini_api_key');
-    if (savedKey) {
-      setIsOpen(false);
-    } else {
-      alert('Bạn phải nhập API Key để sử dụng các tính năng AI của ứng dụng!');
-    }
+    setIsOpen(false);
   };
 
   if (!isOpen) return null;
@@ -64,7 +57,7 @@ export const ApiKeyModal: React.FC = () => {
               <p className="text-sm text-slate-500">Cấu hình Gemini AI để sinh câu hỏi tự động</p>
             </div>
           </div>
-          {hasKey && (
+          {true && (
             <button onClick={handleClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition">
               <X className="w-5 h-5" />
             </button>
@@ -134,13 +127,11 @@ export const ApiKeyModal: React.FC = () => {
         </div>
 
         <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
-          {hasKey && (
+          {true && (
             <button
               onClick={handleClose}
               className="px-5 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-200 transition"
-            >
-              Hủy
-            </button>
+            > Bỏ qua </button>
           )}
           <button
             onClick={handleSave}
