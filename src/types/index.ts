@@ -53,7 +53,7 @@ export interface LearningMaterial {
   };
 }
 
-export type GameMode = 'Tự học' | 'Thi thử' | 'Phản xạ' | 'Đối kháng';
+export type GameMode = 'Tự học' | 'Thi thử' | 'Phản xạ' | 'Đối kháng' | 'Giáo viên';
 
 export interface PlayHistory {
   id: string;
@@ -121,4 +121,17 @@ export interface LeaderboardEntry {
   totalGames: number;
   avgAccuracy: number;
   bestStreak?: number;
+}
+export type ToolType = 'geogebra' | 'url' | 'iframe';
+export type ToolCategory = 'thao-tac' | 'tro-choi' | 'mo-phong' | 'chon-hs' | 'khac';
+
+export interface TeachingTool {
+  id: string;
+  name: string;
+  type: ToolType;
+  category: ToolCategory;
+  url: string;
+  description: string;
+  isActive: boolean;
+  createdAt: string;
 }
