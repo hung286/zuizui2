@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: process.env.GITHUB_ACTIONS ? '/zuizui2/' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
