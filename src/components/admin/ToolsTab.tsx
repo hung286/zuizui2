@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { TeachingTool, ToolType } from '../../types';
 import { getTeachingTools, saveTeachingTools } from '../../utils/storage';
+import { getToolEmbedUrl } from '../../utils/tools';
 import { Plus, Trash2, Edit2, ExternalLink } from 'lucide-react';
 import { soundFx } from '../../utils/sound';
 
 export const ToolsTab: React.FC = () => {
   const [tools, setTools] = useState<TeachingTool[]>([]);
+  const [previewTool, setPreviewTool] = useState<TeachingTool | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTool, setCurrentTool] = useState<Partial<TeachingTool>>({});
 
@@ -157,7 +159,13 @@ export const ToolsTab: React.FC = () => {
                 target="_blank" 
                 rel="noreferrer"
                 className="text-xs text-blue-600 font-bold flex items-center gap-1"
-                onClick={e => tool.type !== 'url' && e.preventDefault()}
+                onClick={e => {
+                if (tool.type !== 'url') {
+                  e.preventDefault();
+                  setPreviewTool(tool);
+                  soundFx.playClick();
+                }
+              }}
               >
                 <ExternalLink className="w-3 h-3" />
                 {tool.type === 'url' ? 'Mở link' : 'Xem trước'}
@@ -179,6 +187,28 @@ export const ToolsTab: React.FC = () => {
           </div>
         )}
       </div>
+
+      {previewTool && (
+        <div className="fixed inset-0 z-50 bg-slate-900/90 flex flex-col p-4 md:p-8">
+          <div className="flex justify-between items-center mb-4 max-w-6xl mx-auto w-full">
+            <h3 className="text-white text-xl font-bold">{previewTool.name}</h3>
+            <button 
+              onClick={() => { setPreviewTool(null); soundFx.playClick(); }} 
+              className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold hover:bg-rose-700 transition"
+            >
+              Đóng xem trước
+            </button>
+          </div>
+          <div className="flex-1 bg-white rounded-xl overflow-hidden max-w-6xl mx-auto w-full relative">
+            <iframe 
+              src={getToolEmbedUrl(previewTool)} 
+              className="absolute inset-0 w-full h-full border-0" 
+              allowFullScreen
+              title={previewTool.name}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

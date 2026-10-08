@@ -50,9 +50,9 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({ onSelectForGenerator
       if (items.length === 0) {
         const defaultMaterial: LearningMaterial = {
           id: 'mat_default_nvt',
-          title: 'Hồ sơ lịch sử: Anh hùng Liệt sĩ Nguyễn Văn Trỗi',
+          title: 'Hồ sơ lịch sử: Lớp Toán Thầy Hùng',
           type: 'markdown',
-          content: `# TIỂU SỬ VÀ SỰ NGHIỆP CÁCH MẠNG ANH HÙNG NGUYỄN VĂN TRỖI
+          content: `# GIỚI THIỆU LỚP TOÁN THẦY HÙNG
 
 1. TIỂU SỬ:
 - Sinh ngày: 01/02/1940 tại làng Thanh Quýt, xã Điện Thắng (nay là Điện Thắng Trung, thị xã Điện Bàn, tỉnh Quảng Nam).
@@ -66,8 +66,8 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({ onSelectForGenerator
 - Đêm 9/5/1964: Việc gài mìn bị bại lộ, anh bị địch bắt tại trận địa.
 
 3. 9 PHÚT BẤT TỬ TRƯỚC HỌNG SÚNG GIẶC:
-- Dù bị tra tấn bằng cực hình dã man trong Khám Chí Hòa, anh Trỗi kiên quyết không khai báo, bảo vệ trọn vẹn an toàn cho cơ sở cách mạng.
-- Phong trào du kích FALN Venezuela từng bắt cóc trung tá không quân Mỹ Michael Smolen để yêu cầu trả tự do cho anh Trỗi. Nhưng kẻ thù đã tráo trở, đưa anh ra trường bắn vườn chuối sau khám Chí Hòa xử bắn vào 9 giờ 50 phút sáng ngày 15/10/1964.
+- Dù bị tra tấn bằng cực hình dã man trong Khám Chí Hòa, Thầy Hùng kiên quyết không khai báo, bảo vệ trọn vẹn an toàn cho cơ sở cách mạng.
+- Phong trào du kích FALN Venezuela từng bắt cóc trung tá không quân Mỹ Michael Smolen để yêu cầu trả tự do cho Thầy Hùng. Nhưng kẻ thù đã tráo trở, đưa anh ra trường bắn vườn chuối sau khám Chí Hòa xử bắn vào 9 giờ 50 phút sáng ngày 15/10/1964.
 - Lời hô vang bất hủ trước họng súng: "Hãy nhớ lấy lời tôi! Đả đảo đế quốc Mỹ! Hồ Chí Minh muôn năm! Việt Nam muôn năm!".`,
           fileSize: 1850,
           createdAt: new Date().toISOString()

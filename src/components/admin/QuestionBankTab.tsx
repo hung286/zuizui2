@@ -144,7 +144,7 @@ export const QuestionBankTab: React.FC<QuestionBankTabProps> = ({
   };
 
   const handleRestoreDefault50 = () => {
-    if (!confirm('Khôi phục 50 câu hỏi mặc định về Anh hùng Nguyễn Văn Trỗi? Các câu hỏi đã tạo khác sẽ được giữ lại hoặc thay thế nếu trùng ID.')) return;
+    if (!confirm('Khôi phục 50 câu hỏi mặc định về Lớp Toán Thầy Hùng? Các câu hỏi đã tạo khác sẽ được giữ lại hoặc thay thế nếu trùng ID.')) return;
     soundFx.playClick();
     const restored = restore50DefaultQuestions();
     onQuestionsChange(restored);
@@ -319,7 +319,7 @@ export const QuestionBankTab: React.FC<QuestionBankTabProps> = ({
           <button
             onClick={handleRestoreDefault50}
             className="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold transition flex items-center gap-1"
-            title="Khôi phục 50 câu Nguyễn Văn Trỗi"
+            title="Khôi phục 50 câu Lớp Toán Thầy Hùng"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Khôi phục 50 câu mặc định</span>

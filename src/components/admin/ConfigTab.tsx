@@ -25,7 +25,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ currentConfig, onConfigUpd
   const [isProcessingLogo, setIsProcessingLogo] = useState(false);
 
   const presets = [
-    { name: 'TOÁN HỌC', org: 'LỚP TOÁN THẦY HÙNG', theme: 'blue' as ThemeColor },
+    { name: 'TOÁN PRO', org: 'LỚP TOÁN THẦY HÙNG', theme: 'blue' as ThemeColor },
     { name: 'RUNG CHUÔNG VÀNG – LỊCH SỬ VIỆT NAM', org: 'CLB Sử Học Tuổi Trẻ', theme: 'amber' as ThemeColor },
     { name: 'THỬ THÁCH TIẾNG ANH LỚP 9', org: 'Tổ Ngoại Ngữ Trường THCS', theme: 'indigo' as ThemeColor },
     { name: 'ÔN TẬP KHOA HỌC – CUỐI HỌC KỲ', org: 'Tổ Tự Nhiên & STEM', theme: 'emerald' as ThemeColor },
