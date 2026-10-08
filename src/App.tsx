@@ -22,6 +22,7 @@ import { SelfStudyMode } from './components/SelfStudyMode';
 import { MockExamMode } from './components/MockExamMode';
 import { ReflexMode } from './components/ReflexMode';
 import { BattleMode } from './components/BattleMode';
+import { TeacherMode } from './components/TeacherMode';
 import { AdminStudio } from './components/admin/AdminStudio';
 import { LeaderboardPanel } from './components/LeaderboardPanel';
 import { ProgressDashboard } from './components/ProgressDashboard';
@@ -134,6 +135,10 @@ export default function App() {
 
         {activeMode === 'Đối kháng' && (
           <BattleMode questions={questions} student={student} />
+        )}
+
+        {activeMode === 'Giáo viên' && (
+          <TeacherMode />
         )}
 
         {activeMode === 'dashboard' && (
