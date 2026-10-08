@@ -1,4 +1,4 @@
-import { AppConfig, Question, PlayHistory, StudentProfile } from '../types';
+import { AppConfig, Question, PlayHistory, StudentProfile, TeachingTool } from '../types';
 import { DEFAULT_QUESTIONS_50 } from '../data/defaultQuestions';
 
 const KEY_CONFIG = 'edu_app_config_v31';
@@ -343,4 +343,26 @@ export function factoryResetSystem(): void {
     localStorage.removeItem(KEY_GEMINI_KEY);
     sessionStorage.removeItem(KEY_GEMINI_KEY);
   } catch {}
+}
+const KEY_TOOLS = 'edu_teaching_tools_v31';
+
+export function getTeachingTools(): TeachingTool[] {
+  try {
+    const raw = localStorage.getItem(KEY_TOOLS);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveTeachingTools(tools: TeachingTool[]): boolean {
+  try {
+    localStorage.setItem(KEY_TOOLS, JSON.stringify(tools));
+    return true;
+  } catch (e) {
+    console.error('Error saving tools:', e);
+    return false;
+  }
 }
