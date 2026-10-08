@@ -14,7 +14,8 @@ import {
   Zap,
   Swords,
   Stethoscope,
-  BarChart2
+  BarChart2,
+  MonitorPlay
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -251,6 +252,20 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Swords className="w-4 h-4 text-amber-300" />
             <span>4. Đối kháng 2 đội (Phím A & L)</span>
+          </button>
+
+          <div className="w-px h-5 bg-slate-200 mx-1 shrink-0 hidden sm:block"></div>
+
+          <button
+            onClick={() => onSelectMode('Giáo viên')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shrink-0 ${
+              activeMode === 'Giáo viên'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
+                : 'text-slate-600 hover:bg-purple-50 hover:text-purple-700'
+            }`}
+          >
+            <MonitorPlay className="w-4 h-4" />
+            <span>Giáo viên</span>
           </button>
 
           <div className="w-px h-5 bg-slate-200 mx-1 shrink-0 hidden sm:block"></div>
