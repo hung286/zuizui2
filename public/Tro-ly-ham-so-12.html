@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toán 12. Trợ lý hàm số lớp 12</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Lora -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Nerdamer (Math Engine) -->
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Solve.js"></script>
+
+    <!-- MathJax (LaTeX Rendering) -->
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' },
+            startup: { typeset: false } // We handle typesetting manually
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #0d261c;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .royal-gold { color: #f1c40f; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .royal-gold-bg { background: linear-gradient(135deg, #d4af37 0%, #f1c40f 100%); color: #0d261c; }
+        .royal-border { border: 2px solid #d4af37; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
+        .input-box { background-color: #163d2d; border: 1px solid #2a664d; color: #fff; transition: all 0.3s ease; }
+        .input-box:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+        .math-output { font-size: 1.15rem; overflow-x: auto; padding: 10px 0; }
+        ::-webkit-scrollbar { height: 6px; }
+        ::-webkit-scrollbar-track { background: #0d261c; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+    </style>
+</head>
+<body class="px-4 w-full">
+
+    <div class="w-full max-w-md mx-auto bg-[#113124] rounded-xl p-6 royal-border relative">
+        
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold royal-gold tracking-wide mb-1 uppercase">Trợ lý hàm số</h1>
+            <p class="text-[#d4af37] italic text-sm">Phong cách toán Hưng Yên hiện đại</p>
+        </div>
+
+        <div class="space-y-4 mb-4">
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-gray-300">Chọn dạng hàm số:</label>
+                <select id="funcType" onchange="updateInputs()" class="w-full p-2 rounded input-box font-medium">
+                    <option value="cubic">Bậc 3: y = ax³ + bx² + cx + d</option>
+                    <option value="biquadratic">Bậc 4 trùng phương: y = ax⁴ + bx² + c</option>
+                    <option value="rational">Phân thức: y = (ax² + bx + c)/(dx + e)</option>
+                </select>
+            </div>
+
+            <div id="coefficients" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- Khung nhập Miền xét Min/Max -->
+        <div class="mb-5 p-3 bg-[#0b2118] border border-[#2a664d] rounded-lg shadow-inner">
+            <label class="block text-sm font-semibold mb-2 text-gray-300">Miền xét Min/Max (Bỏ trống là $\mathbb{R}$):</label>
+            <div class="flex items-center gap-1">
+                <select id="bracketLeft" class="p-2 rounded input-box font-bold w-12 text-center text-sm">
+                    <option value="[">[</option>
+                    <option value="(">(</option>
+                </select>
+                <!-- Dùng ký hiệu vô cực Unicode cho placeholder -->
+                <input type="text" id="domainA" class="w-full p-2 rounded input-box text-sm text-center" placeholder="-∞">
+                <span class="text-[#d4af37] font-bold">;</span>
+                <input type="text" id="domainB" class="w-full p-2 rounded input-box text-sm text-center" placeholder="+∞">
+                <select id="bracketRight" class="p-2 rounded input-box font-bold w-12 text-center text-sm">
+                    <option value="]">]</option>
+                    <option value=")">)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="actionButtons" class="flex flex-wrap gap-2 justify-center mb-6">
+            <button onclick="calculate('trajectory')" class="flex-1 min-w-[30%] royal-gold-bg py-2 px-1 rounded font-bold text-sm shadow-md hover:opacity-90 transition">Quỹ đạo CT</button>
+            <button onclick="calculate('monotonicity')" class="flex-1 min-w-[30%] royal-gold-bg py-2 px-1 rounded font-bold text-sm shadow-md hover:opacity-90 transition">Đơn điệu</button>
+            <button onclick="calculate('extrema')" class="flex-1 min-w-[30%] royal-gold-bg py-2 px-1 rounded font-bold text-sm shadow-md hover:opacity-90 transition">Cực trị</button>
+            <button onclick="calculate('minmax')" class="flex-1 min-w-[45%] royal-gold-bg py-2 px-1 rounded font-bold text-sm shadow-md hover:opacity-90 transition border-2 border-white/20">Min / Max</button>
+            <button id="btnAsymptote" onclick="calculate('asymptote')" class="hidden flex-1 min-w-[45%] royal-gold-bg py-2 px-1 rounded font-bold text-sm shadow-md hover:opacity-90 transition">Tiệm cận xiên</button>
+        </div>
+
+        <!-- Output Section -->
+        <div id="outputArea" class="hidden">
+            <div class="border-t border-[#2a664d] pt-4 text-center">
+                <p class="royal-gold font-semibold mb-2" id="outputLabel">Hàm số ban đầu:</p>
+                <div id="funcMath" class="math-output text-white mb-4"></div>
+                
+                <p class="royal-gold font-semibold mb-2 mt-4" id="resultLabel">Kết quả:</p>
+                <div id="resultMath" class="math-output text-white"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        nerdamer.set('EXPA', false); 
+        const config = {
+            cubic: { labels: ['a', 'b', 'c', 'd'], default: ['1', '-3', '0', '1'] },
+            biquadratic: { labels: ['a', 'b', 'c'], default: ['1', '-2', '1'] },
+            rational: { labels: ['a', 'b', 'c', 'd', 'e'], default: ['1', '0', '1', '1', '-1'] }
+        };
+
+        function updateInputs() {
+            const type = document.getElementById('funcType').value;
+            const container = document.getElementById('coefficients');
+            container.innerHTML = '';
+            
+            config[type].labels.forEach((lbl, idx) => {
+                const val = config[type].default[idx];
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Hệ số ${lbl} =</label>
+                        <input type="text" id="input_${lbl}" value="${val}" class="w-full p-2 rounded input-box text-sm">
+                    </div>
+                `;
+            });
+            document.getElementById('outputArea').classList.add('hidden');
+
+            const btnAsymptote = document.getElementById('btnAsymptote');
+            if (type === 'rational') btnAsymptote.classList.remove('hidden');
+            else btnAsymptote.classList.add('hidden');
+        }
+
+        function formatTerm(coeffStr, variableStr, isLeading) {
+            if (coeffStr === '0') return '';
+            let isComplex = coeffStr.includes('+') || (coeffStr.includes('-') && coeffStr.indexOf('-') !== 0);
+            let texCoeff = nerdamer(coeffStr).toTeX().replace(/\\cdot/g, '');
+            if (variableStr) {
+                if (coeffStr === '1') return (isLeading ? '' : '+') + variableStr;
+                if (coeffStr === '-1') return '-' + variableStr;
+                if (isComplex) return (isLeading ? '' : '+') + '\\left(' + texCoeff + '\\right)' + variableStr;
+                else return (isLeading || coeffStr.startsWith('-') ? '' : '+') + texCoeff + variableStr;
+            } else {
+                return (isLeading || coeffStr.startsWith('-') ? '' : '+') + texCoeff;
+            }
+        }
+
+        function isNumeric(str) {
+            try { return !isNaN(parseFloat(nerdamer(str).evaluate().text())); } catch(e) { return false; }
+        }
+
+        function calculateY_exact(rootStr, type, vals) {
+            try {
+                if (type === 'cubic') {
+                    let A = nerdamer(`(2/3)*(${vals.c}) - (2/9)*((${vals.b})^2/(${vals.a}))`).toString();
+                    let B = nerdamer(`(${vals.d}) - ((${vals.b})*(${vals.c}))/(9*(${vals.a}))`).toString();
+                    return nerdamer(`(${A})*(${rootStr}) + (${B})`).simplify().toString();
+                } else if (type === 'biquadratic') {
+                    let A = nerdamer(`(${vals.b})/2`).toString();
+                    let B = nerdamer(`${vals.c}`).toString();
+                    return nerdamer(`(${A})*(${rootStr})^2 + (${B})`).simplify().toString();
+                } else {
+                    let A = nerdamer(`(2*(${vals.a}))/(${vals.d})`).toString();
+                    let B = nerdamer(`(${vals.b})/(${vals.d})`).toString();
+                    return nerdamer(`(${A})*(${rootStr}) + (${B})`).simplify().toString();
+                }
+            } catch(e) { return "0"; }
+        }
+
+        function getPt(rootExact, type, vals) {
+            let x_tex = nerdamer(rootExact).toTeX().replace(/\\cdot/g, '');
+            let y_exact = calculateY_exact(rootExact, type, vals);
+            let y_tex = nerdamer(y_exact).toTeX().replace(/\\cdot/g, '');
+            return `(${x_tex}; ${y_tex})`;
+        }
+
+        function calculate(action) {
+            const type = document.getElementById('funcType').value;
+            const vals = {};
+            config[type].labels.forEach(lbl => {
+                let val = document.getElementById(`input_${lbl}`).value.trim();
+                vals[lbl] = val === '' ? '0' : val;
+            });
+
+            document.getElementById('outputArea').classList.remove('hidden');
+            let funcTex = '';
+            let resultHtml = '';
+            let resultLabel = '';
+
+            try {
+                let y_expr = '';
+                if (type === 'cubic') {
+                    let t1 = formatTerm(vals.a, 'x^3', true); let t2 = formatTerm(vals.b, 'x^2', t1 === '');
+                    let t3 = formatTerm(vals.c, 'x', t1 === '' && t2 === ''); let t4 = formatTerm(vals.d, '', t1 === '' && t2 === '' && t3 === '');
+                    y_expr = t1 + t2 + t3 + t4; if(y_expr==='') y_expr = '0';
+                    funcTex = `y = ${y_expr}`;
+                } else if (type === 'biquadratic') {
+                    let t1 = formatTerm(vals.a, 'x^4', true); let t2 = formatTerm(vals.b, 'x^2', t1 === ''); let t3 = formatTerm(vals.c, '', t1 === '' && t2 === '');
+                    y_expr = t1 + t2 + t3; if(y_expr==='') y_expr = '0';
+                    funcTex = `y = ${y_expr}`;
+                } else {
+                    let num1 = formatTerm(vals.a, 'x^2', true); let num2 = formatTerm(vals.b, 'x', num1 === ''); let num3 = formatTerm(vals.c, '', num1 === '' && num2 === '');
+                    let num = num1 + num2 + num3; if(num==='') num = '0';
+                    let den1 = formatTerm(vals.d, 'x', true); let den2 = formatTerm(vals.e, '', den1 === ''); let den = den1 + den2;
+                    funcTex = `y = \\frac{${num}}{${den}}`;
+                }
+
+                document.getElementById('funcMath').innerHTML = `$$${funcTex}$$`;
+
+                let allNumeric = config[type].labels.every(lbl => isNumeric(vals[lbl]));
+                let vA = isNumeric(vals.a) ? parseFloat(nerdamer(vals.a).evaluate().text()) : 0;
+                let vD = (type === 'rational' && isNumeric(vals.d)) ? parseFloat(nerdamer(vals.d).evaluate().text()) : 0;
+
+                let y_prime_expr = '';
+                if (type === 'cubic') y_prime_expr = `3*(${vals.a})*x^2 + 2*(${vals.b})*x + (${vals.c})`;
+                else if (type === 'biquadratic') y_prime_expr = `4*(${vals.a})*x^3 + 2*(${vals.b})*x`;
+                else y_prime_expr = `(${vals.a})*(${vals.d})*x^2 + 2*(${vals.a})*(${vals.e})*x + (${vals.b})*(${vals.e}) - (${vals.c})*(${vals.d})`;
+
+                let roots = nerdamer.solve(y_prime_expr, 'x');
+                let rootsArr = [];
+                if(roots.symbol && roots.symbol.elements) rootsArr = roots.symbol.elements.map(e => e.text());
+                else if (roots.text() !== '[]') {
+                    let text = roots.text();
+                    if(text.startsWith('[') && text.endsWith(']')) rootsArr = text.slice(1,-1).split(',').map(s=>s.trim());
+                    else rootsArr = [text];
+                }
+
+                if (action === 'trajectory') {
+                    resultLabel = type === 'biquadratic' ? "Quỹ đạo cực trị là Parabol:" : "Quỹ đạo cực trị là Đường thẳng:";
+                    let trajTex = '';
+                    if (type === 'cubic') {
+                        let A = nerdamer(`(2/3)*(${vals.c}) - (2/9)*((${vals.b})^2/(${vals.a}))`).simplify().toString();
+                        let B = nerdamer(`(${vals.d}) - ((${vals.b})*(${vals.c}))/(9*(${vals.a}))`).simplify().toString();
+                        let termX = formatTerm(A, 'x', true); let termC = formatTerm(B, '', termX === '');
+                        trajTex = `y = ${termX}${termC}`;
+                    } else if (type === 'biquadratic') {
+                        let A = nerdamer(`(${vals.b})/2`).simplify().toString(); let B = nerdamer(`${vals.c}`).simplify().toString();
+                        let termX2 = formatTerm(A, 'x^2', true); let termC = formatTerm(B, '', termX2 === '');
+                        trajTex = `y = ${termX2}${termC}`;
+                    } else if (type === 'rational') {
+                        let A = nerdamer(`(2*(${vals.a}))/(${vals.d})`).simplify().toString(); let B = nerdamer(`(${vals.b})/(${vals.d})`).simplify().toString();
+                        let termX = formatTerm(A, 'x', true); let termC = formatTerm(B, '', termX === '');
+                        trajTex = `y = ${termX}${termC}`;
+                    }
+                    if(trajTex === 'y = ') trajTex = 'y = 0';
+                    resultHtml = `$$${trajTex}$$`;
+                } 
+                else if (action === 'monotonicity') {
+                    resultLabel = "Tính đơn điệu:";
+                    if (!allNumeric) {
+                        let rootsTex = rootsArr.map((r, i) => `x_{${i+1}} = ${nerdamer(r).toTeX().replace(/\\cdot/g, '')}`).join('; \\quad ');
+                        resultHtml = `<p class="text-sm mb-2 text-gray-300">Nghiệm của $y' = 0$:</p>$$${rootsTex || "\\text{Vô nghiệm hoặc nghiệm phức tạp}"}$$<p class="text-sm mt-2 text-gray-200"><span class="royal-gold">★</span> <b>Hàm số chứa tham số:</b> Xét dấu qua các nghiệm trên để lập BBT.</p>`;
+                    } else {
+                        let rootsObj = [];
+                        rootsArr.forEach(r => { let v=0; try{v=parseFloat(nerdamer(r).evaluate().text());}catch(e){} rootsObj.push({ tex: nerdamer(r).toTeX().replace(/\\cdot/g, ''), val: v }); });
+                        rootsObj.sort((a,b) => a.val - b.val);
+
+                        if (type === 'cubic') {
+                            if (rootsObj.length < 2) resultHtml = `<p>Hàm số <b>${vA>0?'đồng biến':'nghịch biến'}</b> trên khoảng $(-\\infty; +\\infty)$</p>`;
+                            else resultHtml = `<p class="leading-loose">Hàm số <b>${vA>0?'đồng biến':'nghịch biến'}</b> trên khoảng $(-\\infty; ${rootsObj[0].tex})$ và $(${rootsObj[1].tex}; +\\infty)$</p><p class="leading-loose">Hàm số <b>${vA>0?'nghịch biến':'đồng biến'}</b> trên khoảng $(${rootsObj[0].tex}; ${rootsObj[1].tex})$</p>`;
+                        } else if (type === 'biquadratic') {
+                            if (rootsObj.length === 1) resultHtml = `<p class="leading-loose">Hàm số <b>${vA>0?'nghịch biến':'đồng biến'}</b> trên $(-\\infty; ${rootsObj[0].tex})$</p><p class="leading-loose">Hàm số <b>${vA>0?'đồng biến':'nghịch biến'}</b> trên $(${rootsObj[0].tex}; +\\infty)$</p>`;
+                            else if (rootsObj.length === 3) resultHtml = `<p class="leading-loose">Hàm số <b>${vA>0?'đồng biến':'nghịch biến'}</b> trên các khoảng $(${rootsObj[0].tex}; ${rootsObj[1].tex})$ và $(${rootsObj[2].tex}; +\\infty)$</p><p class="leading-loose">Hàm số <b>${vA>0?'nghịch biến':'đồng biến'}</b> trên các khoảng $(-\\infty; ${rootsObj[0].tex})$ và $(${rootsObj[1].tex}; ${rootsObj[2].tex})$</p>`;
+                        } else if (type === 'rational') {
+                            let tc_tex = nerdamer(`-(${vals.e})/(${vals.d})`).toTeX().replace(/\\cdot/g, '');
+                            if (rootsObj.length < 2) resultHtml = `<p class="leading-loose">Hàm số <b>${(vA*vD)>0?'đồng biến':'nghịch biến'}</b> trên từng khoảng $(-\\infty; ${tc_tex})$ và $(${tc_tex}; +\\infty)$</p>`;
+                            else resultHtml = `<p class="leading-loose">Hàm số <b>${(vA*vD)>0?'đồng biến':'nghịch biến'}</b> trên từng khoảng $(-\\infty; ${rootsObj[0].tex})$ và $(${rootsObj[1].tex}; +\\infty)$</p><p class="leading-loose">Hàm số <b>${(vA*vD)>0?'nghịch biến':'đồng biến'}</b> trên từng khoảng $(${rootsObj[0].tex}; ${tc_tex})$ và $(${tc_tex}; ${rootsObj[1].tex})$</p>`;
+                        }
+                    }
+                }
+                else if (action === 'extrema') {
+                    resultLabel = "Tọa độ Điểm Cực Trị:";
+                    if (!allNumeric) {
+                        if (rootsArr.length === 0) resultHtml = `<p class="text-sm">Hàm số không có cực trị.</p>`;
+                        else {
+                            resultHtml = `<div class="flex flex-col gap-3 text-left">`;
+                            rootsArr.forEach((root, idx) => {
+                                resultHtml += `<div class="bg-[#0b2118] p-3 rounded border border-[#2a664d]"><span class="text-xs text-gray-400">Điểm cực trị ${idx+1}:</span>$$${getPt(root, type, vals)}$$</div>`;
+                            });
+                            resultHtml += `</div><p class="text-xs mt-3 text-gray-400 italic text-center">*Ghi chú: Cần xét dấu y'' để phân định Cực Đại / Cực Tiểu theo m.</p>`;
+                        }
+                    } else {
+                        let rObj = [];
+                        rootsArr.forEach(r => { let v=0; try{v=parseFloat(nerdamer(r).evaluate().text());}catch(e){} rObj.push({ exact: r, val: v }); });
+                        rObj.sort((a,b) => a.val - b.val);
+
+                        if (type === 'cubic' || type === 'rational') {
+                            if (rObj.length < 2) resultHtml = `<p>Hàm số không có cực trị.</p>`;
+                            else {
+                                let p1 = getPt(rObj[0].exact, type, vals), p2 = getPt(rObj[1].exact, type, vals);
+                                let sign = type==='cubic' ? vA : (vA*vD);
+                                resultHtml = `<p class="leading-loose text-green-300 font-semibold">Điểm cực đại: $${sign>0?p1:p2}$</p><p class="leading-loose text-red-300 font-semibold">Điểm cực tiểu: $${sign>0?p2:p1}$</p>`;
+                            }
+                        } else if (type === 'biquadratic') {
+                            if (rObj.length === 1) resultHtml = vA>0 ? `<p class="leading-loose text-red-300 font-semibold">Điểm cực tiểu: $${getPt(rObj[0].exact, type, vals)}$</p><p class="leading-loose text-gray-400">Không có điểm cực đại.</p>` : `<p class="leading-loose text-green-300 font-semibold">Điểm cực đại: $${getPt(rObj[0].exact, type, vals)}$</p><p class="leading-loose text-gray-400">Không có điểm cực tiểu.</p>`;
+                            else if (rObj.length === 3) resultHtml = vA>0 ? `<p class="leading-loose text-green-300 font-semibold">Điểm cực đại: $${getPt(rObj[1].exact, type, vals)}$</p><p class="leading-loose text-red-300 font-semibold">Điểm cực tiểu: $${getPt(rObj[0].exact, type, vals)}$ và $${getPt(rObj[2].exact, type, vals)}$</p>` : `<p class="leading-loose text-red-300 font-semibold">Điểm cực tiểu: $${getPt(rObj[1].exact, type, vals)}$</p><p class="leading-loose text-green-300 font-semibold">Điểm cực đại: $${getPt(rObj[0].exact, type, vals)}$ và $${getPt(rObj[2].exact, type, vals)}$</p>`;
+                        }
+                    }
+                }
+                else if (action === 'asymptote' && type === 'rational') {
+                    resultLabel = "Đường tiệm cận xiên của đồ thị hàm số:";
+                    let A = nerdamer(`(${vals.a})/(${vals.d})`).simplify().toString();
+                    let B = nerdamer(`( (${vals.b})*(${vals.d}) - (${vals.a})*(${vals.e}) ) / ((${vals.d})^2)`).simplify().toString();
+                    let termX = formatTerm(A, 'x', true); let termC = formatTerm(B, '', termX === '');
+                    let asymTex = `y = ${termX}${termC}`;
+                    resultHtml = `$$${asymTex === 'y = ' ? 'y = 0' : asymTex}$$`;
+                }
+                else if (action === 'minmax') {
+                    resultLabel = "Giá trị lớn nhất / Nhỏ nhất:";
+                    if (!allNumeric) {
+                        resultHtml = `<p class="text-sm text-gray-200 leading-relaxed"><span class="royal-gold">★</span> <b>Hàm số chứa tham số:</b> Vui lòng lập bảng biến thiên của hàm số trên miền đã cho, xét các trường hợp của tham số để kết luận GTLN, GTNN.</p>`;
+                    } else {
+                        let a_str = document.getElementById('domainA').value.trim().toLowerCase();
+                        let b_str = document.getElementById('domainB').value.trim().toLowerCase();
+                        let bLeft = document.getElementById('bracketLeft').value;
+                        let bRight = document.getElementById('bracketRight').value;
+
+                        // Chấp nhận cả '-inf' và ký tự '-∞'
+                        let a_val = (a_str === '' || a_str.includes('-inf') || a_str.includes('-∞')) ? -Infinity : parseFloat(a_str);
+                        let b_val = (b_str === '' || b_str.includes('+inf') || b_str.includes('inf') || b_str.includes('+∞') || b_str.includes('∞')) ? Infinity : parseFloat(b_str);
+
+                        if (isNaN(a_val) || isNaN(b_val) || a_val >= b_val) {
+                            resultHtml = `<p class="text-red-400 text-sm">Miền xét không hợp lệ. Hãy nhập đúng khoảng/đoạn (ví dụ: từ -1 đến 5).</p>`;
+                        } else {
+                            let v = { 
+                                a: vA, 
+                                b: isNumeric(vals.b)?parseFloat(nerdamer(vals.b).evaluate().text()):0, 
+                                c: isNumeric(vals.c)?parseFloat(nerdamer(vals.c).evaluate().text()):0, 
+                                d: vD, 
+                                e: isNumeric(vals.e)?parseFloat(nerdamer(vals.e).evaluate().text()):0 
+                            };
+                            
+                            let validRoots = [];
+                            rootsArr.forEach(r => {
+                                let val = parseFloat(nerdamer(r).evaluate().text());
+                                if(!isNaN(val) && val > a_val && val < b_val) validRoots.push(val);
+                            });
+
+                            let hasAsym = false;
+                            if (type === 'rational' && v.d !== 0) {
+                                let xtc = -v.e / v.d;
+                                if (xtc > a_val && xtc < b_val) hasAsym = true;
+                                if (Math.abs(xtc - a_val) < 1e-7 && bLeft === '[') bLeft = '('; 
+                                if (Math.abs(xtc - b_val) < 1e-7 && bRight === ']') bRight = ')';
+                            }
+
+                            if (hasAsym) {
+                                resultHtml = `<p class="text-red-300 text-sm">Hàm số gián đoạn tại tiệm cận đứng nằm bên trong miền xét. Do đó hàm tiến tới $\\pm\\infty$ và không có GTLN / GTNN.</p>`;
+                            } else {
+                                let getVal = function(x) {
+                                    if(type === 'cubic') return v.a*x*x*x + v.b*x*x + v.c*x + v.d;
+                                    if(type === 'biquadratic') return v.a*x*x*x*x + v.b*x*x + v.c;
+                                    if(type === 'rational') return (v.a*x*x + v.b*x + v.c)/(v.d*x + v.e);
+                                };
+
+                                let getLimitInf = function(dir) {
+                                    if (type === 'cubic') return (v.a > 0) ? (dir > 0 ? Infinity : -Infinity) : (dir > 0 ? -Infinity : Infinity);
+                                    if (type === 'biquadratic') return (v.a > 0) ? Infinity : -Infinity;
+                                    if (type === 'rational') return (v.a/v.d > 0) ? (dir > 0 ? Infinity : -Infinity) : (dir > 0 ? -Infinity : Infinity);
+                                };
+
+                                let achieved = [];
+                                validRoots.forEach(x => achieved.push({x: x, y: getVal(x)}));
+                                if (a_val !== -Infinity && bLeft === '[') achieved.push({x: a_val, y: getVal(a_val)});
+                                if (b_val !== Infinity && bRight === ']') achieved.push({x: b_val, y: getVal(b_val)});
+
+                                let limits = [];
+                                if (a_val === -Infinity) limits.push(getLimitInf(-1));
+                                else if (bLeft === '(') limits.push(getVal(a_val + 1e-9));
+
+                                if (b_val === Infinity) limits.push(getLimitInf(1));
+                                else if (bRight === ')') limits.push(getVal(b_val - 1e-9));
+
+                                let hasMax = false, hasMin = false;
+                                let maxVal = -Infinity, minVal = Infinity;
+                                let maxPt = null, minPt = null;
+
+                                if (achieved.length > 0) {
+                                    achieved.forEach(pt => {
+                                        if (pt.y > maxVal) { maxVal = pt.y; maxPt = pt; }
+                                        if (pt.y < minVal) { minVal = pt.y; minPt = pt; }
+                                    });
+                                    hasMax = true; hasMin = true;
+
+                                    limits.forEach(L => {
+                                        if (L > maxVal + 1e-5) hasMax = false;
+                                        if (L < minVal - 1e-5) hasMin = false;
+                                    });
+                                }
+
+                                let fmt = (n) => Math.round(n * 1000) / 1000;
+                                
+                                resultHtml = `<div class="flex flex-col gap-3 text-left w-full">`;
+                                if (hasMax) resultHtml += `<div class="bg-[#0b2118] p-3 rounded border border-[#2a664d]"><span class="text-green-300 font-semibold">GTLN (Max) $= ${fmt(maxVal)}$</span> <span class="text-sm text-gray-300">tại $x = ${fmt(maxPt.x)}$</span></div>`;
+                                else resultHtml += `<div class="bg-[#0b2118] p-3 rounded border border-[#2a664d] text-gray-400">Không có Giá trị lớn nhất trên miền này.</div>`;
+
+                                if (hasMin) resultHtml += `<div class="bg-[#0b2118] p-3 rounded border border-[#2a664d]"><span class="text-red-300 font-semibold">GTNN (Min) $= ${fmt(minVal)}$</span> <span class="text-sm text-gray-300">tại $x = ${fmt(minPt.x)}$</span></div>`;
+                                else resultHtml += `<div class="bg-[#0b2118] p-3 rounded border border-[#2a664d] text-gray-400">Không có Giá trị nhỏ nhất trên miền này.</div>`;
+                                resultHtml += `</div><p class="text-xs mt-3 text-gray-400 italic text-center">*Ghi chú: Kết quả số thập phân làm tròn tới 3 chữ số.</p>`;
+                            }
+                        }
+                    }
+                }
+
+                document.getElementById('resultLabel').innerText = resultLabel;
+                document.getElementById('resultMath').innerHTML = resultHtml;
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('resultMath').innerHTML = `<p class="text-red-400 text-sm">Lỗi tính toán: Vui lòng kiểm tra lại hệ số nhập vào.</p>`;
+            } finally {
+                if (window.MathJax) MathJax.typesetPromise([document.getElementById('outputArea')]).catch((err) => console.log(err.message));
+            }
+        }
+
+        // Tự động render MathJax toàn bộ trang khi vừa load xong
+        window.onload = () => {
+            updateInputs();
+            if (window.MathJax) {
+                MathJax.typesetPromise().catch((err) => console.log(err.message));
+            }
+        };
+    </script>
+</body>
+</html>
